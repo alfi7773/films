@@ -1,0 +1,1134 @@
+.burger::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+.burger__btn {
+}
+
+.burger__icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .burger__icon {
+        position: relative;
+        z-index: 11;
+        display: flex;
+        flex-direction: column;
+        width: 26px;
+        height: 18px;
+        opacity: 1;
+        visibility: visible;
+        transition: all 0.25s 0.25s;
+        pointer-events: all;
+        gap: 6px 0;
+    }
+
+    .burger__icon::before,
+    .burger__icon::after {
+        content: "";
+        display: block;
+        width: 26px;
+        height: 2px;
+        background: cl(color-white);
+    }
+
+    .burger__icon::before {
+        animation: down-rotate-back 0.8s ease-out both;
+    }
+
+    .burger__icon::after {
+        animation: up-rotate-back 0.8s ease-out both;
+    }
+
+    .burger__icon span {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        height: 2px;
+        background: cl(color-white);
+        animation: show 0.8s ease-out forwards;
+    }
+}
+
+@keyframes up-rotate-back {
+    0% {
+        background: cl(color-slate-blue);
+        transform: translateY(-8px) rotate(45deg);
+        transform-origin: center;
+    }
+    30% {
+        transform: translateY(-8px);
+        transform-origin: center;
+        animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    100% {
+        transform: translateY(0);
+        animation-timing-function: cubic-bezier(0.16, -0.88, 0.97, 0.53);
+    }
+}
+
+@keyframes down-rotate-back {
+    0% {
+        background: cl(color-slate-blue);
+        transform: translateY(8px) rotate(-45deg);
+        transform-origin: center;
+    }
+    30% {
+        transform: translateY(8px);
+        transform-origin: center;
+        animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    100% {
+        transform: translateY(0);
+        animation-timing-function: cubic-bezier(0.16, -0.88, 0.97, 0.53);
+    }
+}
+
+@keyframes show {
+    29% {
+        background: cl(color-slate-blue);
+        opacity: 0;
+    }
+    30% {
+        background: cl(color-slate-blue);
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.burger__menu {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -100vh;
+    opacity: 0;
+    transition: all 5s ease, margin-top 1s ease-out;
+    pointer-events: none;
+}
+
+._active .burger__icon::before {
+    animation: down-rotate 0.8s ease-out both;
+}
+
+._active .burger__icon::after {
+    animation: up-rotate 0.8s ease-out both;
+}
+
+._active .burger__icon span {
+    animation: hide 0.8s ease-out forwards;
+}
+
+._active .burger__menu {
+    margin-top: 0;
+    background: cl(color-biscay);
+    opacity: 1;
+    transition: all 0s ease, margin-top 0.8s ease-out;
+    pointer-events: all;
+}
+
+@keyframes up-rotate {
+    0% {
+        transform: translateY(0);
+        animation-timing-function: cubic-bezier(0.16, -0.88, 0.97, 0.53);
+    }
+    30% {
+        background: cl(color-slate-blue);
+        transform: translateY(-8px);
+        transform-origin: center;
+        animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    100% {
+        background: cl(color-slate-blue);
+        transform: translateY(-8px) rotate(45deg);
+        transform-origin: center;
+    }
+}
+
+@keyframes down-rotate {
+    0% {
+        transform: translateY(0);
+        animation-timing-function: cubic-bezier(0.16, -0.88, 0.97, 0.53);
+    }
+    30% {
+        background: cl(color-slate-blue);
+        transform: translateY(8px);
+        transform-origin: center;
+        animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    100% {
+        background: cl(color-slate-blue);
+        transform: translateY(8px) rotate(-45deg);
+        transform-origin: center;
+    }
+}
+
+@keyframes hide {
+    29% {
+        opacity: 1;
+    }
+    30% {
+        background: cl(color-slate-blue);
+        opacity: 0;
+    }
+    100% {
+        background: cl(color-slate-blue);
+        opacity: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    .burger {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: -1;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.5s ease;
+        pointer-events: none;
+    }
+}
+
+._active.burger::before {
+    content: "";
+    position: fixed;
+    z-index: 2;
+    background: cl(color-black, 0.25);
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.5s ease;
+    pointer-events: all;
+}
+
+.menu-burger {
+    z-index: 10;
+    overflow: hidden scroll;
+    max-height: 100%;
+}
+
+.menu-burger__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    min-width: 298px;
+    max-width: 100%;
+    gap: 35px 0;
+}
+
+.nav__list {
+    flex-direction: column;
+}
+
+.nav__item {
+    color: blue;
+}
+
+
+/* 2 part*/
+.film-card_1 {
+
+}
+
+.film-card_1__btn {
+
+}
+
+.film-card_1__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    padding: 18px 35px;
+    min-height: 325px;
+    max-width: 210px;
+    box-shadow: 0 0 30px rgba(169, 169, 169, 0.2);
+    background: #2f3b4f;
+    gap: 15px;
+}
+
+.film-card_1__image {
+    width: 170px;
+    height: 255px;
+}
+
+.film-card_1__image img {
+    border-radius: 30px;
+}
+
+
+/* 3 part */
+
+.footer {
+    padding: 30px;
+}
+
+.footer__container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 15px;
+}
+
+@media (max-width: 768px) {
+    .footer__container {
+        justify-content: center;
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+.footer__logo {
+}
+
+@media (max-width: 767px) {
+    .footer__logo {
+        margin: 0 auto;
+    }
+}
+
+.footer__nav {
+}
+
+
+/*4 part*/
+
+.form {
+    position: relative;
+    font-family: Arial, sans-serif;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form__sending {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.25);
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form__sending .loading {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+}
+
+.form__body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form__body input,
+.form__body textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.form__body input:focus,
+.form__body textarea:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+.form__body button {
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.form__body button:hover {
+    background-color: #2980b9;
+}
+
+/* Анимация вращения для .loading */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* 5 part*/
+
+.card-forum {
+    height: 100%;
+    display: flex;
+    gap: 30px;
+    background: #2f3b4f; /* Пример для цвета Biscay */
+    border-radius: 20px;
+}
+
+.card-forum._big {
+    flex: 0 1 66%;
+}
+
+.card-forum__img {
+    min-width: 25%;
+    min-height: 100%;
+    max-height: 100%;
+}
+
+.card-forum__img img {
+    border-radius: 20px 0 0 20px;
+}
+
+@media (max-width: 768px) {
+    .card-forum {
+        flex-direction: column;
+        height: auto;
+        gap: 0;
+    }
+
+    .card-forum__img {
+        width: 100%;
+        height: 300px; /* Примерное значение, замените на подходящее */
+    }
+
+    .card-forum__img img {
+        border-radius: 20px 20px 0 0;
+    }
+}
+
+.card-forum__info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 30px;
+}
+
+.card-forum__title {
+    margin: 0;
+    color: #fff; /* Пример для белого цвета */
+    font-weight: bold;
+    font-size: 30px; /* Примерный размер шрифта */
+}
+
+.card-forum__text {
+    margin: 0;
+    color: #fff;
+    font-weight: 500;
+    font-size: 24px; /* Примерный размер шрифта */
+}
+
+.card-forum__link {
+    font-weight: 500;
+    color: #6c7c9e; /* Пример для Slate Blue */
+    margin-top: auto;
+    cursor: pointer;
+}
+
+.card-forum__link:hover .card-forum__more {
+    margin-left: 10px;
+}
+
+.card-forum__more {
+    transition: margin-left 0.3s ease;
+    width: 15px;
+    height: 13px;
+}
+
+.card-forum__icon {
+    /* Добавьте стили для иконки, если нужно */
+}
+
+
+/* 6 part */
+
+.forum {
+    position: relative;
+}
+
+.forum__container::before {
+    z-index: -1;
+    position: absolute;
+    content: '';
+    top: -30px;
+    left: 0;
+    right: 0;
+    height: 250px;
+    background: url("../img/mainpage/forum/topwave_forum.svg") center / cover no-repeat;
+    pointer-events: none;
+}
+
+.forum__body {
+    width: 100vw;
+    position: relative;
+    padding-bottom: 45px;
+}
+
+.forum__body::before {
+    z-index: -1;
+    position: absolute;
+    content: '';
+    top: 215px;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: #6c7c9e; /* Пример для Slate Blue */
+    display: block;
+}
+
+.forum__wrapper {
+    /* Добавьте стили для wrapper, если нужно */
+}
+
+.forum__list {
+    display: flex;
+    align-content: space-between;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 24px; /* Примерное значение, замените на подходящее */
+}
+
+@media (max-width: 768px) {
+    .forum__list {
+        align-items: stretch;
+        align-content: stretch;
+    }
+}
+
+.forum__title {
+    margin-bottom: 150px;
+}
+
+.forum__item._sl {
+    flex: 1 0 680px; /* Примерное значение, замените на подходящее */
+}
+
+.forum__item._bg {
+    flex: 1 0 930px; /* Примерное значение, замените на подходящее */
+}
+
+
+/* 7 part */
+
+.header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100vw;
+    z-index: 50;
+    min-height: 10px;
+}
+
+@media (max-width: 768px) {
+    .header {
+        height: 0;
+    }
+}
+
+.header__body {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 30px 0;
+    min-height: 50px; /* Примерное значение */
+    background-color: transparent;
+    transition: all 0.5s ease;
+}
+
+.header__container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 100%;
+    gap: 20px;
+}
+
+.header__nav {
+    /* Добавьте стили для навигации, если нужно */
+}
+
+.header__actions {
+    /* Добавьте стили для действий, если нужно */
+}
+
+.header__logo {
+    /* Добавьте стили для логотипа, если нужно */
+}
+
+.header._scroll .header__body {
+    background-color: #6c7c9e; /* Пример для Slate Blue */
+    min-height: fit-content;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.header._scroll .logo {
+    width: 125px;
+    height: 60px;
+}
+
+.header._scroll .link {
+    /* Стили для ссылок в режиме скроллинга */
+}
+
+.header._scroll .link:hover::after {
+    background: #2f3b4f; /* Пример для Biscay */
+}
+
+.actions-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 20px 40px;
+}
+
+.actions-header__item {
+    /* Стили для элемента действий */
+}
+
+.actions-header__link {
+    /* Стили для ссылки действий */
+}
+
+.actions-header__search {
+    /* Стили для поисковой строки */
+}
+
+.actions-header__icon {
+    width: 32px;
+    height: 32px;
+    transition: transform 0.3s ease;
+}
+
+.actions-header__icon:hover {
+    transform: scale(1.2);
+}
+
+
+/* 8 part */
+
+.hero {
+    /* Стили для контейнера hero */
+}
+
+.hero__container {
+    margin-top: 60px; /* Примерное значение, замените на подходящее */
+    padding-top: 30px;
+}
+
+.hero__title {
+    margin: 0 0 45px 0; /* Примерное значение для отступа */
+    max-width: 1150px;
+    font-size: 40px; /* Пример для font-big-title */
+    color: #fff; /* Пример для белого цвета */
+}
+
+.hero__subtitle {
+    margin: 0 0 45px 0; /* Примерное значение для отступа */
+    max-width: 700px;
+    font-size: 24px; /* Пример для font-medium */
+    color: #fff; /* Пример для белого цвета */
+}
+
+.hero__btn {
+    /* Добавьте стили для кнопки, если нужно */
+}
+
+._container {
+    /* Стили для контейнера */
+}
+
+._btn-reset {
+    /* Стили для сброса кнопки */
+}
+
+._link-reset {
+    /* Стили для сброса ссылки */
+}
+
+
+/* 9 part */
+
+.membership {
+    padding-top: 30px; /* Примерное значение */
+    padding-bottom: 60px; /* Примерное значение */
+}
+
+.membership__container {
+    /* Добавьте стили для контейнера membership, если нужно */
+}
+
+.membership__form {
+    /* Добавьте стили для формы membership, если нужно */
+}
+
+.form-membership__sending {
+    /* Стили для состояния отправки формы */
+}
+
+.form-membership__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px; /* Примерное значение */
+}
+
+.form-membership__title {
+    display: inline-block;
+    max-width: 741px;
+    margin-bottom: 30px; /* Примерное значение */
+    color: #fff; /* Пример для белого цвета */
+    font-size: 18px; /* Пример для font-medium */
+}
+
+.form-membership__price {
+    font-size: 22px; /* Пример для font-semibold */
+    text-decoration: underline;
+}
+
+.form-membership__item {
+    position: relative;
+    width: 100%; /* Примерное значение */
+    max-width: 1100px;
+}
+
+.form-membership__label {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    display: flex;
+    border: none;
+    color: #2f3b4f; /* Пример для slate blue */
+    font-size: 16px; /* Пример для font-medium */
+    background-color: transparent;
+    transform: translateY(-50%);
+    transition: all 0.2s ease-in-out, color 0.3s ease-in-out;
+    pointer-events: none;
+}
+
+.form-membership__input {
+    appearance: none;
+    display: block;
+    border-radius: 40px;
+    border: 2px solid #2f3b4f; /* Пример для slate blue */
+    padding: 12px 30px; /* Примерное значение */
+    width: 100%;
+    color: #2f3b4f; /* Пример для slate blue */
+    font-size: 16px; /* Пример для font-medium */
+    background: transparent;
+}
+
+.form-membership__input::placeholder {
+    color: transparent;
+    pointer-events: none;
+}
+
+.form-membership__input:focus,
+.form-membership__input:not(:placeholder-shown) {
+    outline: none;
+    color: #2f3b4f; /* Пример для slate blue */
+    background: transparent;
+}
+
+.form-membership__input:focus ~ .form-membership__label,
+.form-membership__input:not(:placeholder-shown) ~ .form-membership__label {
+    top: 0;
+    margin-left: 10px;
+    padding: 2px;
+    font-size: 14px; /* Пример для font-medium */
+    color: #2f3b4f; /* Пример для slate blue */
+    background: #b6c0d0; /* Пример для Biscay */
+}
+
+.form-membership__btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.form-membership__agreement {
+    font-size: 16px; /* Пример для font-medium */
+    color: #b6b6b6; /* Пример для Storm Dust */
+}
+
+.form-membership__link {
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px; /* Пример для font-semibold */
+    color: #2f3b4f; /* Пример для slate blue */
+}
+
+
+/* 10 part */
+
+.nav__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 25px; /* Примерное значение для gap */
+}
+
+.nav__item {
+    position: relative;
+    font-size: 16px; /* Пример для font-medium */
+    color: #fff; /* Пример для цвета white */
+}
+
+.nav__link {
+    /* Добавьте стили для ссылки, если нужно */
+}
+
+
+/* 11 part */
+
+.news-card {
+    display: flex;
+    gap: 15px;
+}
+
+.news-card_main {
+    position: relative;
+}
+
+.news-card_main__background {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.news-card_main__background:before {
+    border-radius: 20px;
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    background: rgba(0, 0, 0, 0.5); /* Заменен cl() на rgba */
+    pointer-events: none;
+}
+
+.news-card_main__title .link:after {
+    background: none;
+}
+
+.news-card_main__img {
+    position: relative;
+    z-index: -2;
+    width: auto;
+    height: auto;
+    border-radius: 20px;
+}
+
+.news-card_main__info {
+    left: 30px;
+    bottom: 50px;
+    position: absolute;
+    padding: 30px 30px 0 0;
+}
+
+.news-card__img {
+    width: 75px; /* Заменены переменные на фиксированные значения */
+    min-width: 75px;
+    min-height: 75px;
+}
+
+.news-card__img img {
+    width: 75px;
+    height: 75px;
+    border-radius: 15px;
+    object-fit: cover;
+}
+
+.news-card__info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.news-card__title {
+    margin: 0;
+    color: #fff; /* Заменен cl() на цвет */
+    font-weight: bold;
+}
+
+.news-card__title .link:after {
+    background: #fff; /* Цвет для hover эффекта */
+}
+
+.news-card__text {
+    margin: 0;
+    color: #fff; /* Заменен cl() на цвет */
+    font-weight: 500;
+    font-size: 15px; /* Заменено с адаптивного значения */
+}
+
+
+/* 12 part */
+
+.news {
+    position: relative;
+}
+
+.news__container:before {
+    z-index: -1;
+    position: absolute;
+    content: '';
+    top: -270px;
+    left: 0;
+    right: 0;
+    height: 288px;
+    background: url("../img/mainpage/news/topwave_news.svg") center / cover no-repeat;
+    pointer-events: none;
+}
+
+.news__container:after {
+    z-index: -1;
+    position: absolute;
+    content: '';
+    bottom: -270px;
+    left: 0;
+    right: 0;
+    height: 288px;
+    background: url("../img/mainpage/news/bottomwave_news.svg") center / cover no-repeat;
+    pointer-events: none;
+}
+
+.news__body {
+    position: relative;
+    width: 100vw;
+}
+
+.news__body:before {
+    z-index: -1;
+    position: absolute;
+    content: '';
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    display: block;
+    background: #5f6366; /* Заменен cl(color-slate-blue) на hex */
+}
+
+.news__wrapper {
+    display: grid;
+    min-height: 637px;
+    column-gap: 115px;
+    row-gap: 25px; /* Заменен adaptive-value на фиксированное значение */
+    align-items: start;
+    grid-template-areas: "none title" "news_main news";
+}
+
+@media (max-width: 768px) {
+    /* $md заменено на 768px */
+    .news__wrapper {
+        grid-template-areas: "title" "news_main" "news";
+    }
+}
+
+.news__title {
+    grid-area: title;
+}
+
+.news__title .title__link {
+    @media (any-hover: hover) {
+        &::after {
+            background: #ffffff; /* Заменен cl(color-white) на hex */
+        }
+    }
+}
+
+.news__other {
+    grid-area: news;
+}
+
+.news__list {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 50px; /* Заменен adaptive-value на фиксированное значение */
+}
+
+.news__main {
+    z-index: 1;
+    grid-area: news_main;
+}
+
+
+/* 13 part */
+
+.page {
+    & __hero {
+        margin-bottom: 210px; /* Заменен adaptive-value на фиксированное значение */
+    }
+
+    & __popfilm {
+        margin-bottom: 210px; /* Заменен adaptive-value на фиксированное значение */
+    }
+
+    & __watchlater {
+        margin-bottom: 270px; /* Заменен adaptive-value на фиксированное значение */
+    }
+
+    & __news {
+        margin-bottom: 215px; /* Заменен adaptive-value на фиксированное значение */
+    }
+
+    & __forum {
+    }
+
+    /*&__membership {
+      margin-bottom: 215px; Заменен adaptive-value на фиксированное значение
+    }*/
+}
+
+
+/* 13 part */
+
+.popfilm {
+  // .popfilm__container
+  &__container {
+  }
+
+  &__body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // .popfilm__title
+  &__title {
+    margin-bottom: 45px;
+  }
+
+  // .popfilm__film-card
+  &__film-card {
+    .film-card__btn {
+      width: 75%;
+    }
+
+    .film-card__body {
+      min-height: 600px; /* Заменено adaptive-value на фиксированное значение */
+      max-width: 1172px; /* Заменено adaptive-value на фиксированное значение */
+
+      .film-card__image {
+        width: 975px; /* Заменено adaptive-value на фиксированное значение */
+        height: 460px; /* Заменено adaptive-value на фиксированное значение */
+      }
+    }
+  }
+}
+
+
+/* 14 part */
+
+.title {
+  /* .title__body */
+  &__body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  /* .title__title */
+  &__title {
+    margin: 0;
+    font-family: 'Arial', sans-serif; /* Замените на нужный шрифт */
+    color: #ffffff; /* Замените на нужный цвет */
+  }
+
+  /* .title__link */
+  &__link {
+    font-family: 'Arial', sans-serif; /* Замените на нужный шрифт */
+    text-align: center;
+    color: #ffffff; /* Замените на нужный цвет */
+  }
+
+  /* Стиль при наведении */
+  @media (any-hover: hover) {
+    &__link::after {
+      background: #ffffff; /* Замените на нужный цвет */
+    }
+  }
+}
+
+
+/* 15 part */
+
+.watchlater {
+  /* .watchlater__container */
+  &__container {
+    /* Здесь можно добавить стили для контейнера, если нужно */
+  }
+
+  &__title {
+    margin-bottom: 45px;
+  }
+
+  /* .watchlater__cards */
+  &__cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Замените на необходимое значение для gap */
+  }
+}
+
+
+

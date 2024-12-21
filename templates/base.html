@@ -1,0 +1,55 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {#    <link rel="stylesheet" href="{% static 'css/style2.css' %}">#}
+    {#    <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon-4c91f8e530.png">#}
+    {#    <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32-0e405a95ea.png">#}
+    {#    <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16-c55171e84f.png">#}
+    {#    <link rel="manifest" href="./favicon/site.webmanifest">#}
+    {#    <link rel="mask-icon" href="./favicon/safari-pinned-tab-2ac8444cb0.svg" color="#000000">#}
+    {#    <link rel="shortcut icon" href="./favicon/favicon.ico">#}
+    {#    <meta name="application-name" content="WynGulp">#}
+    {#    <meta name="apple-mobile-web-app-title" content="WynGulp">#}
+    {#    <meta name="msapplication-TileColor" content="#000000">#}
+    {#    <meta name="msapplication-TileImage" content="./favicon/mstile-144x144-827d50d1ee.png">#}
+    {#    <meta name="msapplication-config" content="./favicon/browserconfig.xml">#}
+    {#    <meta name="theme-color" content="#000000">#}
+
+    <title>Document</title>
+</head>
+<body>
+{% include 'components/nav.html' %}
+{% block content %}
+    <div class="first-part">
+
+        <div>
+
+            <h1 class="white">
+                Фильмы, сериалы,
+                <br>мультфильмы в одном месте!
+            </h1>
+            <p class="white">
+                Всегда хотели узнать где можно дешевле посмотреть
+                <br>то или иное произведение исскуства? Просто обсудить
+                <br>какой-то либо кинофраншизу? А может просто
+                <br>посмотреть последние новости в сфере кино?
+                <br>Тогда, данный сайт был сделан для вас!
+            </p>
+        </div>
+
+        <div>
+            <div class="vector"></div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+
+</body>
+</html>
