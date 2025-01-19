@@ -1,6 +1,10 @@
 from django.shortcuts import render
+from .models import *
 
 
 def main(request):
-    return render(request, 'base.html')
+    films = Film.objects.all()
+    return render(request, 'base.html', {
+    'films':films,
+    })
 # Create your views here.

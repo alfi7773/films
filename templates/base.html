@@ -7,7 +7,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    {#    <link rel="stylesheet" href="{% static 'css/style2.css' %}">#}
+    <link rel="stylesheet" href="{% static 'css/style2.css' %}">
     {#    <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon-4c91f8e530.png">#}
     {#    <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32-0e405a95ea.png">#}
     {#    <link rel="icon" type="image/png" sizes="16x16" href="./favicon/favicon-16x16-c55171e84f.png">#}
@@ -48,8 +48,21 @@
         </div>
     </div>
 
+    <div>
+        <div>
+            {% for film in films %}
+                <div>
+                    <img src="{{ film.image.url }}" alt="">
+                    <p>{{ film.description }}</p>
+                    <p>{{ film.year }}</p>
+                    <p>{{ film.category }} - {{ film.genre }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
 {% endblock content %}
 
-
+<script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

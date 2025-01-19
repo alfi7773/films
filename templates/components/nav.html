@@ -1,30 +1,17 @@
 <div class="container">
-    <header>
-        <div class="header__body gap" >
-            <div class="header__container _container">
-                <div class="logo _img-holder" data-scroll_to="body">
-                    <div class="multi-logo"></div>
-                </div>
-                <nav class="header__nav nav " >
-                    <ul class="gap white">
-{#                        <li class="nav__item link">#}
-                            <a href="/static">
-                                Фильмы
-                            </a>
-{#                        </li>#}
-{#                        <li class="nav__item link">#}
-                            <a href="/static">
-                                Треды
-                            </a>
-{#                        </li>#}
-{#                        <li class="nav__item link">#}
-                            <a href="/static">
-                                Новости
-                            </a>
-{#                        </li>#}
-                    </ul>
-                </nav>
-            </div>
+    <header class="navbar">
+        <div class="navbar-logo">
+            <a href="#">MultiCinema</a>
         </div>
+        <ul class="navbar-menu">
+            <li><a href="#films">Фильмы</a></li>
+            <li><a href="#threads">Треды</a></li>
+            <li><a href="#news">Новости</a></li>
+        </ul>
     </header>
+    <main>
+        <section id="films" style="height: 20vh; padding: 20px;"></section>
+<!--        <section id="threads" style="height: 100vh; padding: 20px;">Раздел "Треды"</section>-->
+<!--        <section id="news" style="height: 100vh; padding: 20px;">Раздел "Новости"</section>-->
+    </main>
 </div>
