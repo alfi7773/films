@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 
 class Genre(models.Model):
@@ -52,7 +54,7 @@ class Film(models.Model):
     image = models.ImageField(verbose_name='изображение фильма', upload_to='media_films/')
     category = models.ForeignKey('film.Category', on_delete=models.PROTECT, related_name='film')
     genre = models.ForeignKey('film.Genre', on_delete=models.PROTECT, related_name='film')
-
+    user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
 
 
     def __str__(self):
