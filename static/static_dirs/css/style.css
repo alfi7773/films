@@ -1,5 +1,5 @@
 * {
-    background-color: #2C2C54;
+    background-color: #8e0df4;
 }
 
 /*.header__body {*/
@@ -91,11 +91,12 @@ p {
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    width: 500px;
+    width: 400px;
     height: 800px;
     position: absolute;
     top: -14px;
     right: 0;
+    background-color: transparent;
 }
 
 .first-part {
@@ -175,4 +176,49 @@ video {
     max-width: 800px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+button {
+    /*border: none;*/
+    outline: none;
+    background: none;
+    color: white;
+    cursor: pointer;
+    border: solid 1px white;
+    padding: 14px 180px;
+    border-radius: 10px;
+}
+
+.img {
+    width: 400px;
+    height: 600px;
+    border-radius: 50px;
+}
+
+.display {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/*.movie {*/
+/*    overflow: hidden; !* Скрываем выходящие части картинки *!*/
+/*    width: 300px; !* Фиксированная ширина контейнера *!*/
+/*    height: 200px; !* Фиксированная высота контейнера *!*/
+/*    position: relative;*/
+/*}*/
+
+/*.movie img {*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    transition: transform 0.3s ease;*/
+/*}*/
+
+.movie:hover img {
+    transform: translate(-10px, -15px); /* Сдвигаем картинку внутрь */
+}
+
+.movie {
+    padding: 20px;
 }

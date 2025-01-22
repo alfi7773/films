@@ -51,58 +51,7 @@
 <body>
 {% include 'components/nav.html' %}
 {% block content %}
-<div class="container">
 
-<div class="first-part container">
-
-    <div>
-
-        <h1 class="white">
-            Фильмы, сериалы,
-            <br>мультфильмы в одном месте!
-        </h1>
-        <p class="white">
-            Всегда хотели узнать где можно дешевле посмотреть
-            <br>то или иное произведение исскуства? Просто обсудить
-            <br>какой-то либо кинофраншизу? А может просто
-            <br>посмотреть последние новости в сфере кино?
-            <br>Тогда, данный сайт был сделан для вас!
-        </p>
-    </div>
-
-    <div>
-        <div class="vector"></div>
-    </div>
-</div>
-
-<div class="container">
-    <div>
-        {% for film in films %}
-        <div>
-            <img src="{{ film.image.url }}" alt="">
-            <p>{{ film.description }}</p>
-            <p>{{ film.year }}</p>
-            <p>{{ film.category }} - {{ film.genre }}</p>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-<div>
-    <video id="myVideo" controls>
-        <source src="movie.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-
-    <button onclick="playVideo()">Play</button>
-    <button onclick="pauseVideo()">Pause</button>
-</div>
-
-    <video-js id="myVideo" class="vjs-default-skin" controls preload="auto" data-setup='{}'>
-        <source src='../static/static_dirs/image/logo.png' type="video/mp4">
-    </video-js>
-
-</div>
 
 {% endblock content %}
 

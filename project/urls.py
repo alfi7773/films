@@ -25,8 +25,8 @@ import film
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', lambda r: redirect('/admin/')),
-    path('Films/', include('film.urls')),
+    # path('', lambda r: redirect('/admin/')),
+    path('', include('film.urls')),
     path('api/v1/', include('api.urls')),
 ]
 

@@ -1,7 +1,54 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1 class="white">
-        Фильмы, сериалы,
-        <br>мультфильмы в одном месте!
-    </h1>
+<div class="container">
+
+    <div class="first-part container">
+
+        <div>
+
+            <h1 class="white">
+                Фильмы, сериалы,
+                <br>мультфильмы в одном месте!
+            </h1>
+            <p class="white">
+                Всегда хотели узнать где можно дешевле посмотреть
+                <br>то или иное произведение исскуства? Просто обсудить
+                <br>какой-то либо кинофраншизу? А может просто
+                <br>посмотреть последние новости в сфере кино?
+                <br>Тогда, данный сайт был сделан для вас!
+            </p>
+        </div>
+
+        <div>
+            <div class="vector"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="display">
+            {% for film in films|slice:":3" %}
+            <a href="{% url 'detail' film.id %}">
+            <div class="movie">
+                <img class="img" src="{{ film.image.url }}" alt="">
+                <div class="center">
+                    <p>{{ film.year }}</p>
+                    <p>{{ film.category }} - {{ film.genre }}</p>
+                </div>
+
+                <div>
+                    <a href="{% url 'detail' film.id %}">
+                        <button>
+                            View
+                        </button>
+                    </a>
+                </div>
+            </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+
+</div>
+
 {% endblock content %}
