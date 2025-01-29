@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from utils.main import base64_to_image_file
 import uuid
+from rest_framework.pagination import PageNumberPagination
 
 
 from film.models import Film, Genre, Category
@@ -9,14 +10,17 @@ from film.models import Film, Genre, Category
 from film.models import FilmAttribute, FilmImage
 
 
-class FilmAttributeSerializer(serializers.ModelSerializer):
+
+
+
+class AttributeForFilmSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FilmAttribute
         exclude = ('film',)
 
 
-class FilmImageSerializer(serializers.ModelSerializer):
+class ImageForFilmSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FilmImage
@@ -67,7 +71,7 @@ class DetailFilmSerializer(serializers.ModelSerializer):
 
 class CreateFilmSerializer(serializers.ModelSerializer):
 
-    attributes = FilmAttributeSerializer(many=True)
+    attributes = AttributeForFilmSerializer(many=True)
     image = serializers.ListSerializer(child=serializers.CharField())
 
     class Meta:
@@ -159,3 +163,21 @@ class UpdateFilmSerializer(serializers.ModelSerializer):
 
 
         return instance
+
+class FilmImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FilmImage
+        fields = '__all__'
+
+class FilmAttributeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FilmAttribute
+        fields = '__all__'
+
+class UpdateProductAttributeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FilmAttribute
+        fields = ('name', 'value')

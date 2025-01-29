@@ -26,7 +26,7 @@
 
     <div class="container">
         <div class="display">
-            {% for film in films|slice:":3" %}
+            {% for film in films %}
             <a href="{% url 'detail' film.id %}">
             <div class="movie">
                 <img class="img" src="{{ film.image.url }}" alt="">
