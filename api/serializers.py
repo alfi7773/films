@@ -8,7 +8,25 @@ from rest_framework.pagination import PageNumberPagination
 from film.models import Film, Genre, Category
 
 from film.models import FilmAttribute, FilmImage
+from rest_framework import serializers
+from django.contrib.auth.models import User
 
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'password', 'email']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            password=validated_data['password']
+        )
+        return user
 
 
 
@@ -40,15 +58,14 @@ class CategorySerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
-        product = User
-        fields = ('name',)
+        model = User
+        fields = ('username',)
 
 class FilmSerializer(serializers.ModelSerializer):
     genre = GenreSerializer()
     category = CategorySerializer()
     image = serializers.ImageField()
     # user = UserSerializer()
-    # user =
 
     class Meta:
         model = Film
@@ -61,8 +78,8 @@ class DetailFilmSerializer(serializers.ModelSerializer):
     genre = GenreSerializer()
     category = CategorySerializer()
     image = serializers.ImageField()
-    # user = UserSerializer()
-    user = serializers.ListSerializer(child=serializers.CharField(source='user.name'))
+    user = UserSerializer()
+    # user = serializers.ListSerializer(child=serializers.CharField(source='user.name'))
 
     class Meta:
         model = Film
@@ -71,8 +88,8 @@ class DetailFilmSerializer(serializers.ModelSerializer):
 
 class CreateFilmSerializer(serializers.ModelSerializer):
 
-    attributes = AttributeForFilmSerializer(many=True)
-    image = serializers.ListSerializer(child=serializers.CharField())
+    attributes = AttributeForFilmSerializer(many=True, required=False)
+    image = serializers.ListSerializer(child=serializers.CharField(), required=False)
 
     class Meta:
         model = Film
@@ -80,8 +97,8 @@ class CreateFilmSerializer(serializers.ModelSerializer):
 
 
     def create(self, validated_data):
-        attributes = validated_data.pop('attributes')
-        images = validated_data.pop('image')
+        attributes = validated_data.pop('attributes', [])
+        images = validated_data.pop('image', [])
 
         file_images = []
 
