@@ -63,7 +63,7 @@ class Film(TimeStampAbstractModel):
     year = models.IntegerField(verbose_name='год производства')
     # image = models.ImageField(verbose_name='изображение фильма', upload_to='media_films/')
     category = models.ForeignKey('film.Category', on_delete=models.PROTECT, related_name='film')
-    genre = models.ForeignKey('film.Genre', on_delete=models.PROTECT, related_name='film')
+    genre = models.ManyToManyField('film.Genre')
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='user', blank=True, null=True)
 
 

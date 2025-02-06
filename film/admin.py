@@ -22,7 +22,7 @@ class FilmAttributeStackedInline(admin.TabularInline):
 
 @admin.register(Film)
 class FilmAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'description', 'category', 'genre', 'get_image')
+    list_display = ('id', 'name', 'description', 'category', 'get_image')
     list_display_links = ('id', 'name',)
     list_filter = ('category', 'genre', 'user', 'year',)
     search_fields = ('name', 'description', 'year',)

@@ -15,8 +15,8 @@ from api.serializers import (FilmSerializer, CreateFilmSerializer,
                              FilmAttributeSerializer, FilmImageSerializer,
                              DetailFilmSerializer, UpdateProductAttributeSerializer
                              )
-from film.models import Category, Film, FilmImage, FilmAttribute
-from api.auth.permissions import IsAdminOrReadOnly
+from film.models import Category, Film, FilmImage, FilmAttribute, Genre
+from .permissions import IsAdminOrReadOnly
 
 from .filters import FilmFilter
 from rest_framework.generics import (ListAPIView, CreateAPIView, 
@@ -29,10 +29,16 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import CategorySerializer, RegisterSerializer, CustomTokenObtainPairSerializer
+from .serializers import CategorySerializer, GenreSerializer, RegisterSerializer, CustomTokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 
+
+class AlfiCustomClassUpdate:
+    
+    def update(self, request, id, partial, serializer, instance):
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
 
 class ListCreateFilmApiView(APIView):
     
@@ -93,15 +99,10 @@ class ListCreateFilmApiView(APIView):
         return Response(read_serializer.data, status=status.HTTP_201_CREATED)
 
     
-class UpdateDetailDeleteApiView(APIView):
+class UpdateDetailDeleteApiView(APIView, AlfiCustomClassUpdate):
     
-    def update(self, request, id, partial):
-        film = get_object_or_404(Film, id=id)
-        serializer = UpdateFilmSerializer(data=request.data, instance=film, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        film = serializer.save()
-        read_serializer = DetailFilmSerializer(film, context={'request': request})
-        return Response(read_serializer.data)
+    # def update(self, request, id, partial, serializer, instance):
+    #     return super().update(request, id, partial, serializer, instance)
         
     def get(self, request, id, *args, **kwargs):
         film = get_object_or_404(Film, id=id)
@@ -109,10 +110,18 @@ class UpdateDetailDeleteApiView(APIView):
         return Response(serializer.data)
         
     def put(self, request, id, *args, **kwargs):
-        return self.update(request, id, partial=False)
+        instance = get_object_or_404(Film, id=id)
+        serializer = UpdateFilmSerializer(instance, data=request.data, partial=False)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return self.update(request, id, partial=False, serializer=serializer, instance=instance)
     
     def patch(self, request, id, *args, **kwargs):
-        return self.update(request, id, partial=True)
+        instance = get_object_or_404(Film, id=id)
+        serializer = UpdateFilmSerializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return self.update(request, id, partial=True, serializer=serializer, instance=instance)
         
     def delete(self, request, id, *args, **kwargs):
         film = get_object_or_404(Film, id=id)
@@ -177,21 +186,90 @@ class DeleteImageApiView(APIView):
     
 class ListCreateCategoryApiView(APIView):
     
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    # authentication_classes = [SessionAuthentication, TokenAuthentication]
+    # permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     
     def get(self, request, *args, **kwargs):
         categories = Category.objects.all()
-        serializer = CategorySerializer(request, many=True)
+        serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
     
     def post(self, request, *args, **kwargs):
-        serializer = CategorySerializer()
+        serializer = CategorySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(status=status.HTTP_201_CREATED)
     
+   
+class UpdateDetailDeleteCategoryApiView(APIView, AlfiCustomClassUpdate):
+    
+    def update(self, request, id, partial, serializer, instance):
+        return super().update(request, id, partial, serializer, instance)
+    
+    def get(self, request, id,  *args, **kwargs):
+        category = get_object_or_404(Category, id=id)
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
+    
+    def put(self, request, id, *args, **kwargs):
+        category = get_object_or_404(Category, id=id)
+        serializer = CategorySerializer(category)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return self.update(request, id, partial=False, serializer=serializer, instance=category)
+    
+    def patch(self, request, id, *args, **kwargs):
+        category = get_object_or_404(Category, id=id)
+        serializer = CategorySerializer(category, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return self.update(request, id, partial=True, serializer=serializer, instance=category)
+        
+    def delete(self, request, id, *args, **kwargs):
+        category = get_object_or_404(Category, id=id)
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
 
+class ListCreateGenreApiView(APIView):
+    
+    def get(self, request, *args, **kwargs):
+        genres = Genre.objects.all()
+        serializer = GenreSerializer(genres, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request, *args, **kwargs):
+        serializer = GenreSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    
+class UpdateDetailDeleteGenreApiView(APIView):
+    
+    def update(self, request, id, partial, *args, **kwargs):
+        genre = get_object_or_404(Genre, id=id)
+        serializer = GenreSerializer(genre, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data,status=status.HTTP_201_CREATED)
+    
+    def get(self, request, id, *args, **kwargs):
+        genre = get_object_or_404(Genre, id=id)
+        serializer = GenreSerializer(genre)
+        return Response(serializer.data)
+    
+    def put(self, request, id, *args, **kwargs):
+        return self.update(request, id, partial=False)
+    
+    def patch(self, request, id, *args, **kwargs):
+        return self.update(request, id, partial=True)
+    
+    def delete(self, request, id, *args, **kwargs):
+        genre = get_object_or_404(Genre, id=id)
+        genre.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
 # Authorization
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
