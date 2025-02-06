@@ -170,16 +170,16 @@ class DeleteImageApiView(APIView):
     
 
 # Authorization
-# class RegisterView(generics.CreateAPIView):
-#     queryset = User.objects.all()
-#     permission_classes = [AllowAny]
-#     serializer_class = RegisterSerializer
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = RegisterSerializer
 
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.save()
-#         return Response({"message": "Пользователь создан"}, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response({"message": "Пользователь создан"}, status=status.HTTP_201_CREATED)
 
 
 
