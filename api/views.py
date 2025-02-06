@@ -15,7 +15,8 @@ from api.serializers import (FilmSerializer, CreateFilmSerializer,
                              FilmAttributeSerializer, FilmImageSerializer,
                              DetailFilmSerializer, UpdateProductAttributeSerializer
                              )
-from film.models import Film, FilmImage, FilmAttribute
+from film.models import Category, Film, FilmImage, FilmAttribute
+from api.auth.permissions import IsAdminOrReadOnly
 
 from .filters import FilmFilter
 from rest_framework.generics import (ListAPIView, CreateAPIView, 
@@ -28,11 +29,15 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import RegisterSerializer, CustomTokenObtainPairSerializer
-
+from .serializers import CategorySerializer, RegisterSerializer, CustomTokenObtainPairSerializer
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 
 
 class ListCreateFilmApiView(APIView):
+    
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):
         
@@ -168,6 +173,24 @@ class DeleteImageApiView(APIView):
         serializer = FilmImageSerializer(film_image)
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+    
+    
+class ListCreateCategoryApiView(APIView):
+    
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
+    
+    def get(self, request, *args, **kwargs):
+        categories = Category.objects.all()
+        serializer = CategorySerializer(request, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request, *args, **kwargs):
+        serializer = CategorySerializer()
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
+    
 
 # Authorization
 class RegisterView(generics.CreateAPIView):
@@ -180,6 +203,13 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response({"message": "Пользователь создан"}, status=status.HTTP_201_CREATED)
+
+
+
+
+
+
+
 
 
 
