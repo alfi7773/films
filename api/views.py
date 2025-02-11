@@ -9,6 +9,7 @@ from django.db.models import Q
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
+from django.contrib.auth import get_user_model
 
 from api.serializers import (FilmSerializer, CreateFilmSerializer,
                              UpdateFilmSerializer, ImageForFilmSerializer,
@@ -16,6 +17,7 @@ from api.serializers import (FilmSerializer, CreateFilmSerializer,
                              DetailFilmSerializer, UpdateProductAttributeSerializer
                              )
 from film.models import Category, Film, FilmImage, FilmAttribute, Genre
+from .pagination import CustomPageNumberPagination
 from .permissions import IsAdminOrReadOnly
 
 from .filters import FilmFilter
@@ -23,6 +25,7 @@ from rest_framework.generics import (ListAPIView, CreateAPIView,
                                     RetrieveDestroyAPIView, RetrieveUpdateAPIView)
 
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 
 from rest_framework import generics
 from django.contrib.auth.models import User
@@ -37,127 +40,136 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 class AlfiCustomClassUpdate:
     
     def update(self, request, id, partial, serializer, instance):
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            serializer.data, 
+            status=status.HTTP_200_OK
+            )
         
 
-class ListCreateFilmApiView(APIView):
-    
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
+class ListCreateFilmApiView(GenericAPIView):
+    queryset = Film.objects.all()
+    serializer_class = FilmSerializer
+    pagination_class = CustomPageNumberPagination
     permission_classes = [IsAuthenticated]
     
+    
+    
     def get(self, request, *args, **kwargs):
-        
-        films = Film.objects.all()
-
-        search = request.GET.get('search')
-        if search:
-            films = films.filter(
-                Q(name__icontains=search) |
-                Q(description__icontains=search) |
-                Q(category__name__icontains=search)
-            ).distinct()
-
-        filterset = FilmFilter(queryset=films, data=request.GET)
-        films = filterset.qs
-
-        ordering_fields = ['name', 'description', 'category', 'created_at']
-        ordering: str = request.GET.get('ordering', '')
-        tem_ordering = ordering.split('-')[1] if ordering.startswith('-') else ordering
-
-        if tem_ordering in ordering_fields:
-            films = films.order_by(ordering)
-
-        # name = request.GET.get('name')
-        # year = request.GET.get('year')
-        # genre = request.GET.get('genre')
-        #
-        # if name:
-        #     films = films.filter(name__icontains=name)
-        # if year:
-        #     films = films.filter(year=year)
-        # if genre:
-        #     films = films.filter(genre__name__icontains=genre)
-
-
-        film_count = films.count()
-
-        page = int(request.GET.get('page', 1))
-        page_size = int(request.GET.get('page_size', 2))
-        pagin = Paginator(films, page_size)
-        films = pagin.get_page(page)
-
-        serializer = FilmSerializer(films, many=True, context={'request': request})
-
-        return Response({'page': page, 'page_size': page_size, 'count': film_count,'results': serializer.data})
-
+        films = self.get_queryset()
+        films = self.paginate_queryset(films)
+        data = self.get_serializer(films, many=True).data
+        return self.get_paginated_response(data)
 
     def post(self, request, *args, **kwargs):
         serializer = CreateFilmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         film = serializer.save()
         read_serializer = DetailFilmSerializer(film, context={'request': request})
-        return Response(read_serializer.data, status=status.HTTP_201_CREATED)
-
+        return Response(
+            read_serializer.data, 
+            status=status.HTTP_201_CREATED
+        )
     
-class UpdateDetailDeleteApiView(APIView, AlfiCustomClassUpdate):
+class UpdateDetailDeleteApiView(GenericAPIView):
     
-    # def update(self, request, id, partial, serializer, instance):
-    #     return super().update(request, id, partial, serializer, instance)
+    serializer_class = UpdateFilmSerializer
+    queryset = Film.objects.all()
+    lookup_field = 'id'
+    
+    def update(self, request, partial):
+        films = self.get_object()
+        serializer = UpdateFilmSerializer(data=request.data, instance=films, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        films = serializer.save()
+        if 'genre' in self.request.data:
+            films.genre.add(self.request.data['genre'])
+        return Response(
+            serializer.data, 
+            status=status.HTTP_200_OK
+        )
+    
         
     def get(self, request, id, *args, **kwargs):
         film = get_object_or_404(Film, id=id)
         serializer = FilmSerializer(film, context={'request': request})
         return Response(serializer.data)
         
-    def put(self, request, id, *args, **kwargs):
-        instance = get_object_or_404(Film, id=id)
-        serializer = UpdateFilmSerializer(instance, data=request.data, partial=False)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return self.update(request, id, partial=False, serializer=serializer, instance=instance)
+    def put(self, request, *args, **kwargs):
+        return self.update(request, False)
     
-    def patch(self, request, id, *args, **kwargs):
-        instance = get_object_or_404(Film, id=id)
-        serializer = UpdateFilmSerializer(instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return self.update(request, id, partial=True, serializer=serializer, instance=instance)
+    def patch(self, request, *args, **kwargs):
+        return self.update(request, True)
         
-    def delete(self, request, id, *args, **kwargs):
-        film = get_object_or_404(Film, id=id)
+    def delete(self, request, *args, **kwargs):
+        film = self.get_object()
         film.delete()
-        return Response({"detail": "фильм удалён"}, status=status.HTTP_204_NO_CONTENT)
+        return Response(
+            {"detail": "фильм удалён"}, 
+            status=status.HTTP_204_NO_CONTENT
+        )
     
 
 
-class CreateAttrApiView(APIView):
+class CreateAttrApiView(GenericAPIView):
+    
+    serializer_class = FilmAttributeSerializer
+    queryset = FilmAttribute.objects.all()
+    
+    def get(self, request, *args, **kwargs):
+        attributes = self.get_queryset()
+        attributes = self.paginate_queryset(attributes)
+        page = self.paginate_queryset(attributes)
+        if page is not None:
+            serializer = self.get_serializer(page, many=true)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(attributes, many=True)
+        return Response(serializer.data)
+        
+        
     
     def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer()
         serializer = FilmAttributeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status.HTTP_201_CREATED)
+        return Response(
+            serializer.data, 
+            status.HTTP_201_CREATED
+        )
     
 
-class UpdateDeleteAttrApiView(APIView):
+class UpdateDeleteAttrApiView(GenericAPIView):
     
-    def update(self, request, id, partial):
-        film_attr = get_object_or_404(FilmAttribute, id=id)
+    serializer_class = UpdateProductAttributeSerializer
+    queryset = FilmAttribute.objects.all()
+    lookup_field = 'id'
+    
+    def update(self, request, partial):
+        film_attr = self.get_object()
         serializer = UpdateProductAttributeSerializer(data=request.data, instance=film_attr, partial=partial)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        film_attr = serializer.save()
+        return Response(
+            serializer.data, 
+            status=status.HTTP_200_OK
+        )
     
-    def get(self, request, id, *args, **kwargs):
-        film_attr = get_object_or_404(FilmAttribute, id=id)
+    def get(self, request, *args, **kwargs):
+        film_attr = self.get_object()
         serializer = FilmAttributeSerializer(film_attr)
         return Response(serializer.data)
     
-    def put(self, request, id, *args, **kwargs):
-        return self.update(request, id, partial=False)
+    def put(self, request, *args, **kwargs):
+        return self.update(
+            request, 
+            partial=False
+        )
         
-    def patch(self, request, id, *args, **kwargs):
-        return self.update(request, id, partial=True)
+    def patch(self, request, *args, **kwargs):
+        return self.update(
+            request, 
+            partial=True
+        )
     
     def delete(self, request, id, *args, **kwargs):
         film_attr = get_object_or_404(FilmAttribute, id=id)
@@ -166,113 +178,147 @@ class UpdateDeleteAttrApiView(APIView):
 
     
 
-class CreateImageApiView(APIView):
+class CreateImageApiView(GenericAPIView):
+    
+    serializer_class = FilmImageSerializer
+    queryset = FilmImage.objects.all()
+    
+    def get(self, request, *args, **kwargs):
+        film_img = self.get_queryset()
+        serializer = self.get_serializer(film_img, many=True)
+        return Response(serializer.data)
+        
     
     def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer()
         serializer = FilmImageSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            serializer.data, 
+            status=status.HTTP_201_CREATED
+        )
     
     
-class DeleteImageApiView(APIView):
+class DeleteImageApiView(GenericAPIView):
     
-    def delete(self, request, id, *args, **kwargs):
-        film_image = get_object_or_404(FilmImage, id=id)
-        serializer = FilmImageSerializer(film_image)
+    serializer_class = FilmImageSerializer
+    queryset = FilmImage.objects.all()
+    lookup_field = 'id'
+    
+    def delete(self, request, *args, **kwargs):
+        film_image = self.get_object()
+        serializer = self.get_serializer(film_image)
         return Response(status=status.HTTP_204_NO_CONTENT)
     
     
     
-class ListCreateCategoryApiView(APIView):
+class ListCreateCategoryApiView(GenericAPIView):
+    
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
     
     # authentication_classes = [SessionAuthentication, TokenAuthentication]
     # permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     
     def get(self, request, *args, **kwargs):
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
+        categories = self.get_queryset()
+        serializer = self.get_serializer(categories, many=True)
         return Response(serializer.data)
     
     def post(self, request, *args, **kwargs):
-        serializer = CategorySerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(status=status.HTTP_201_CREATED)
-    
-   
-class UpdateDetailDeleteCategoryApiView(APIView, AlfiCustomClassUpdate):
-    
-    def update(self, request, id, partial, serializer, instance):
-        return super().update(request, id, partial, serializer, instance)
-    
-    def get(self, request, id,  *args, **kwargs):
-        category = get_object_or_404(Category, id=id)
-        serializer = CategorySerializer(category)
-        return Response(serializer.data)
-    
-    def put(self, request, id, *args, **kwargs):
-        category = get_object_or_404(Category, id=id)
-        serializer = CategorySerializer(category)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return self.update(request, id, partial=False, serializer=serializer, instance=category)
-    
-    def patch(self, request, id, *args, **kwargs):
-        category = get_object_or_404(Category, id=id)
-        serializer = CategorySerializer(category, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return self.update(request, id, partial=True, serializer=serializer, instance=category)
-        
-    def delete(self, request, id, *args, **kwargs):
-        category = get_object_or_404(Category, id=id)
-        category.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-        
-
-class ListCreateGenreApiView(APIView):
-    
-    def get(self, request, *args, **kwargs):
-        genres = Genre.objects.all()
-        serializer = GenreSerializer(genres, many=True)
-        return Response(serializer.data)
-    
-    def post(self, request, *args, **kwargs):
-        serializer = GenreSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
+   
+class UpdateDetailDeleteCategoryApiView(GenericAPIView):
     
-class UpdateDetailDeleteGenreApiView(APIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+    lookup_field = 'id'
     
-    def update(self, request, id, partial, *args, **kwargs):
-        genre = get_object_or_404(Genre, id=id)
+    def update(self, request, partial):
+        category = self.get_object()
+        serializer = CategorySerializer(category, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
+    def get(self, request, id,  *args, **kwargs):
+        category = self.get_object()
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
+    
+    def put(self, request, *args, **kwargs):
+        return self.update(request, False)
+    
+    def patch(self, request, *args, **kwargs):
+        return self.update(request, True)
+
+        
+    def delete(self, request, *args, **kwargs):
+        category = self.get_object()
+        category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+        
+
+class ListCreateGenreApiView(GenericAPIView):
+    
+    serializer_class = GenreSerializer
+    queryset = Genre.objects.all()
+    
+    def get(self, request, *args, **kwargs):
+        genres = self.get_queryset()
+        serializer = self.get_serializer(genres, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            serializer.data, 
+            status=status.HTTP_201_CREATED
+        )
+    
+    
+class UpdateDetailDeleteGenreApiView(GenericAPIView):
+    
+    serializer_class = GenreSerializer
+    queryset = Genre.objects.all()
+    lookup_field = 'id'
+    
+    def update(self, request, partial, *args, **kwargs):
+        genre = self.get_object()
         serializer = GenreSerializer(genre, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED
+        )
     
-    def get(self, request, id, *args, **kwargs):
-        genre = get_object_or_404(Genre, id=id)
-        serializer = GenreSerializer(genre)
+    def get(self, request, *args, **kwargs):
+        genre = self.get_object()
+        serializer = self.get_serializer(genre)
         return Response(serializer.data)
     
-    def put(self, request, id, *args, **kwargs):
-        return self.update(request, id, partial=False)
+    def put(self, request, *args, **kwargs):
+        return self.update(request, False)
     
-    def patch(self, request, id, *args, **kwargs):
-        return self.update(request, id, partial=True)
+    def patch(self, request, *args, **kwargs):
+        return self.update(request, True)
     
     def delete(self, request, id, *args, **kwargs):
-        genre = get_object_or_404(Genre, id=id)
+        genre = self.get_object()
         genre.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
         
 # Authorization
 class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
+    queryset = get_user_model()
     permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
 
@@ -280,7 +326,10 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        return Response({"message": "Пользователь создан"}, status=status.HTTP_201_CREATED)
+        return Response(
+            {"message": "Пользователь создан"}, 
+            status=status.HTTP_201_CREATED
+        )
 
 
 

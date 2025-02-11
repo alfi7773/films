@@ -44,8 +44,10 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'rest_framework.authtoken',
+    'phonenumber_field',
 
     'film',
+    'account',
 ]
 
 REST_FRAMEWORK = {
@@ -147,14 +149,16 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# REST_FRAMEWORK = {
-#     'DEFAULT_RENDERER_CLASSES': [
-#         'rest_framework.renderers.JSONRenderer',
-#         'rest_framework.renderers.BrowsableAPIRenderer',
-#     ],
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.BasicAuthentication',
-#         'rest_framework.authentication.SessionAuthentication',
-#         'rest_framework.authentication.TokenAuthentication',
-#     ],
-# }
+REST_FRAMEWORK = {
+     'DEFAULT_RENDERER_CLASSES': [
+         'rest_framework.renderers.JSONRenderer',
+         'rest_framework.renderers.BrowsableAPIRenderer',
+     ],
+     'DEFAULT_AUTHENTICATION_CLASSES': [
+         'rest_framework.authentication.BasicAuthentication',
+         'rest_framework.authentication.SessionAuthentication',
+         'rest_framework.authentication.TokenAuthentication',
+     ],
+ }
+
+AUTH_USER_MODEL = 'account.User'

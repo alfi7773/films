@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from account.models import User
 from utils.main import base64_to_image_file
 import uuid
 from rest_framework.pagination import PageNumberPagination
@@ -10,7 +11,6 @@ from film.models import Film, Genre, Category
 from film.models import FilmAttribute, FilmImage
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.contrib.auth.models import User
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -25,11 +25,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'email']
+        fields = ['password', 'email']
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            username=validated_data['username'],
             email=validated_data.get('email', ''),
             password=validated_data['password']
         )
@@ -147,6 +146,7 @@ class UpdateFilmSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         attributes = validated_data.pop('attributes', [])
         images = validated_data.pop('image', [])
+        genres = validated_data.pop('genre', [])
 
         file_images = []
 
