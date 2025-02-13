@@ -17,6 +17,7 @@ from api.serializers import (FilmSerializer, CreateFilmSerializer,
                              DetailFilmSerializer, UpdateProductAttributeSerializer
                              )
 from film.models import Category, Film, FilmImage, FilmAttribute, Genre
+from .mixins import SerializerByMethodMixin, SuperGenericAPIView
 from .pagination import CustomPageNumberPagination
 from .permissions import IsAdminOrReadOnly
 
@@ -46,22 +47,34 @@ class AlfiCustomClassUpdate:
             )
         
 
-class ListCreateFilmApiView(GenericAPIView):
+class ListCreateFilmApiView(SuperGenericAPIView):
     queryset = Film.objects.all()
-    serializer_class = FilmSerializer
+    serializer_classes = {
+        'GET': FilmSerializer,
+        'POST': CreateFilmSerializer
+    }
+    filter_backends = [
+        SearchFilter,
+        DjangoFilterBackend,
+        OrderingFilter
+    ]
+    search_fields = ['name', 'year', 'description', 'genre']
+    ordering_fields = ['year', 'name', 'genre']
+    # filterset_feilds = ['name', 'year', 'genre', 'category']
+    filterset_class = FilmFilter
     pagination_class = CustomPageNumberPagination
     permission_classes = [IsAuthenticated]
     
     
     
     def get(self, request, *args, **kwargs):
-        films = self.get_queryset()
+        films = self.filter_queryset(self.get_queryset())
         films = self.paginate_queryset(films)
-        data = self.get_serializer(films, many=True).data
-        return self.get_paginated_response(data)
+        serializer = self.get_serializer(films, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        serializer = CreateFilmSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         film = serializer.save()
         read_serializer = DetailFilmSerializer(film, context={'request': request})
@@ -69,8 +82,10 @@ class ListCreateFilmApiView(GenericAPIView):
             read_serializer.data, 
             status=status.HTTP_201_CREATED
         )
+        
     
-class UpdateDetailDeleteApiView(GenericAPIView):
+    
+class UpdateDetailDeleteApiView(SuperGenericAPIView):
     
     serializer_class = UpdateFilmSerializer
     queryset = Film.objects.all()
@@ -78,7 +93,7 @@ class UpdateDetailDeleteApiView(GenericAPIView):
     
     def update(self, request, partial):
         films = self.get_object()
-        serializer = UpdateFilmSerializer(data=request.data, instance=films, partial=partial)
+        serializer = self.get_serializer(data=request.data, instance=films, partial=partial)
         serializer.is_valid(raise_exception=True)
         films = serializer.save()
         if 'genre' in self.request.data:
@@ -89,8 +104,8 @@ class UpdateDetailDeleteApiView(GenericAPIView):
         )
     
         
-    def get(self, request, id, *args, **kwargs):
-        film = get_object_or_404(Film, id=id)
+    def get(self, request, *args, **kwargs):
+        film = self.get_object()
         serializer = FilmSerializer(film, context={'request': request})
         return Response(serializer.data)
         
@@ -110,7 +125,7 @@ class UpdateDetailDeleteApiView(GenericAPIView):
     
 
 
-class CreateAttrApiView(GenericAPIView):
+class CreateAttrApiView(SuperGenericAPIView):
     
     serializer_class = FilmAttributeSerializer
     queryset = FilmAttribute.objects.all()
@@ -128,8 +143,7 @@ class CreateAttrApiView(GenericAPIView):
         
     
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer()
-        serializer = FilmAttributeSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(
@@ -146,7 +160,7 @@ class UpdateDeleteAttrApiView(GenericAPIView):
     
     def update(self, request, partial):
         film_attr = self.get_object()
-        serializer = UpdateProductAttributeSerializer(data=request.data, instance=film_attr, partial=partial)
+        serializer = self.get_serializer(data=request.data, instance=film_attr, partial=partial)
         serializer.is_valid(raise_exception=True)
         film_attr = serializer.save()
         return Response(
@@ -178,7 +192,7 @@ class UpdateDeleteAttrApiView(GenericAPIView):
 
     
 
-class CreateImageApiView(GenericAPIView):
+class CreateImageApiView(SuperGenericAPIView):
     
     serializer_class = FilmImageSerializer
     queryset = FilmImage.objects.all()
@@ -190,8 +204,7 @@ class CreateImageApiView(GenericAPIView):
         
     
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer()
-        serializer = FilmImageSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(
@@ -200,7 +213,7 @@ class CreateImageApiView(GenericAPIView):
         )
     
     
-class DeleteImageApiView(GenericAPIView):
+class DeleteImageApiView(SuperGenericAPIView):
     
     serializer_class = FilmImageSerializer
     queryset = FilmImage.objects.all()
@@ -213,7 +226,7 @@ class DeleteImageApiView(GenericAPIView):
     
     
     
-class ListCreateCategoryApiView(GenericAPIView):
+class ListCreateCategoryApiView(SuperGenericAPIView):
     
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
@@ -233,7 +246,7 @@ class ListCreateCategoryApiView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
    
-class UpdateDetailDeleteCategoryApiView(GenericAPIView):
+class UpdateDetailDeleteCategoryApiView(SuperGenericAPIView):
     
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
@@ -241,14 +254,14 @@ class UpdateDetailDeleteCategoryApiView(GenericAPIView):
     
     def update(self, request, partial):
         category = self.get_object()
-        serializer = CategorySerializer(category, data=request.data)
+        serializer = self.get_serializer(category, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
     
     def get(self, request, id,  *args, **kwargs):
         category = self.get_object()
-        serializer = CategorySerializer(category)
+        serializer = self.get_serializer(category)
         return Response(serializer.data)
     
     def put(self, request, *args, **kwargs):
@@ -264,7 +277,7 @@ class UpdateDetailDeleteCategoryApiView(GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
         
 
-class ListCreateGenreApiView(GenericAPIView):
+class ListCreateGenreApiView(SuperGenericAPIView):
     
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
@@ -284,7 +297,7 @@ class ListCreateGenreApiView(GenericAPIView):
         )
     
     
-class UpdateDetailDeleteGenreApiView(GenericAPIView):
+class UpdateDetailDeleteGenreApiView(SuperGenericAPIView):
     
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
@@ -292,7 +305,7 @@ class UpdateDetailDeleteGenreApiView(GenericAPIView):
     
     def update(self, request, partial, *args, **kwargs):
         genre = self.get_object()
-        serializer = GenreSerializer(genre, data=request.data)
+        serializer = self.get_serializer(genre, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(

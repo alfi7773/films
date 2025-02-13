@@ -105,6 +105,7 @@ class CreateFilmSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         attributes = validated_data.pop('attributes', [])
         images = validated_data.pop('image', [])
+        genres = validated_data.pop('genres', [])
 
         file_images = []
 
@@ -124,6 +125,12 @@ class CreateFilmSerializer(serializers.ModelSerializer):
         for attribute in attributes:
             FilmAttribute.objects.create(
                 **attribute,
+                film=film
+            )
+            
+        for genre in genres:
+            Genre.objects.create(
+                **genre,
                 film=film
             )
 
